@@ -15,12 +15,12 @@
 
 // USB VID & PIDs
 #define VENDOR_ELGATO		0x0fd9
-#define GAME_CAPTURE_HD_0	0x0044
+#define GAME_CAPTURE_HD_0 0x0044
 #define GAME_CAPTURE_HD_1	0x004e
-#define GAME_CAPTURE_HD_2	0x0051
+#define GAME_CAPTURE_HD_2 0x0051
 #define GAME_CAPTURE_HD_3	0x005d // new revision GCHD (HDNew)
 #define GAME_CAPTURE_HD60	0x005c // Game Capture HD60 - unsupported
-#define GAME_CAPTURE_HD60_S	0x004f // Game Capture HD60 S - unsupported
+#define GAME_CAPTURE_HD60_S	0x0074 // Game Capture HD60 S - wip slosh
 
 // firmware
 const char * FW_MB86H57_H58_IDLE[] =
@@ -36,6 +36,9 @@ const char * FW_MB86M01_ASSP_NSEC_IDLE[] =
 const char * FW_MB86M01_ASSP_NSEC_ENC[] =
 {"MB86M01_ASSP_NSEC_ENC_H",
  "mb86m01_assp_nsec_enc_h.bin" };
+const char * FW_HD60_S_MCU[] =
+{"FW_HD60_S_MCU",
+ "FW_HD60_S_MCU.bin" };
 
 // constants
 #define INTERFACE_NUM		0x00
@@ -97,6 +100,11 @@ int GCHD::checkFirmware() {
 		idleNames = FW_MB86M01_ASSP_NSEC_IDLE;
 		encNames = FW_MB86M01_ASSP_NSEC_ENC;
 		nameCount = sizeof(FW_MB86M01_ASSP_NSEC_IDLE)/sizeof(const char *);
+	}
+	else if (deviceType_ == DeviceType::GameCaptureHD60S) {
+		idleNames = FW_HD60_S_MCU;
+		encNames = FW_HD60_S_MCU;
+		nameCount = sizeof(FW_HD60_S_MCU)/sizeof(const char *);
 	}
 	else {
 		throw std::logic_error( "Unsupported device.");
@@ -178,7 +186,7 @@ int GCHD::openDevice() {
 	if (devh_) {
 		deviceType_ = DeviceType::GameCaptureHD60S;
 		std::cerr << "The Elgato Game Capture HD60 S is currently not supported." << std::endl;
-		return 1;
+		return 0;
 	}
 
 	std::cerr << "Unable to find a supported device." << std::endl;
